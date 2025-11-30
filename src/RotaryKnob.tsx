@@ -1,5 +1,20 @@
 import { useRef } from 'react';
 
+// 角度関連の定数
+const START_ANGLE = -135;
+const END_ANGLE = 135;
+const ANGLE_RANGE = END_ANGLE - START_ANGLE; // 270度
+
+// サイズ関連の定数
+const PADDING = 10;
+const TRACK_OFFSET = 8;
+const INDICATOR_OFFSET = 20;
+const STROKE_WIDTH = 3;
+const TRACK_STROKE_WIDTH = 4;
+
+// 角度変換用
+const DEG_TO_RAD = Math.PI / 180;
+
 interface RotaryKnobProps {
   value?: number;
   min?: number;
@@ -17,21 +32,17 @@ export function RotaryKnob({
 }: RotaryKnobProps) {
   const knobRef = useRef<SVGSVGElement>(null);
 
-  // 値を角度に変換 (0度から270度の範囲、-135度から始まる)
   const valueToAngle = (val: number) => {
     const normalized = (val - min) / (max - min);
-    return -135 + normalized * 270;
+    return START_ANGLE + normalized * ANGLE_RANGE;
   };
 
-  // 角度を値に変換
   const angleToValue = (angle: number) => {
-    // -135度から135度の範囲を0-1に正規化
-    const normalized = (angle + 135) / 270;
+    const normalized = (angle - START_ANGLE) / ANGLE_RANGE;
     const clamped = Math.max(0, Math.min(1, normalized));
     return min + clamped * (max - min);
   };
 
-  // マウス/タッチ位置から角度を計算
   const getAngleFromEvent = (clientX: number, clientY: number) => {
     if (!knobRef.current) return 0;
     const rect = knobRef.current.getBoundingClientRect();
@@ -39,17 +50,15 @@ export function RotaryKnob({
     const centerY = rect.top + rect.height / 2;
     const deltaX = clientX - centerX;
     const deltaY = clientY - centerY;
-    let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-    // 上が0度になるように調整
+    let angle = Math.atan2(deltaY, deltaX) / DEG_TO_RAD;
     angle = angle + 90;
-    // -180から180の範囲に正規化
     if (angle > 180) angle -= 360;
     return angle;
   };
 
   const updateValue = (clientX: number, clientY: number) => {
     const angle = getAngleFromEvent(clientX, clientY);
-    const clampedAngle = Math.max(-135, Math.min(135, angle));
+    const clampedAngle = Math.max(START_ANGLE, Math.min(END_ANGLE, angle));
     const newValue = angleToValue(clampedAngle);
     onChange?.(Math.round(newValue));
   };
@@ -93,7 +102,10 @@ export function RotaryKnob({
   };
 
   const angle = valueToAngle(value);
-  const radius = size / 2 - 10;
+  const center = size / 2;
+  const radius = center - PADDING;
+  const trackRadius = radius - TRACK_OFFSET;
+  const indicatorLength = radius - INDICATOR_OFFSET;
 
   return (
     <svg
@@ -106,40 +118,40 @@ export function RotaryKnob({
     >
       {/* 背景の円 */}
       <circle
-        cx={size / 2}
-        cy={size / 2}
+        cx={center}
+        cy={center}
         r={radius}
         fill="#2a2a2a"
         stroke="#444"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
       />
 
       {/* トラック（目盛り背景） */}
       <path
-        d={describeArc(size / 2, size / 2, radius - 8, -135, 135)}
+        d={describeArc(center, center, trackRadius, START_ANGLE, END_ANGLE)}
         fill="none"
         stroke="#555"
-        strokeWidth="4"
+        strokeWidth={TRACK_STROKE_WIDTH}
         strokeLinecap="round"
       />
 
       {/* 値を示すアーク */}
       <path
-        d={describeArc(size / 2, size / 2, radius - 8, -135, angle)}
+        d={describeArc(center, center, trackRadius, START_ANGLE, angle)}
         fill="none"
         stroke="#4fc3f7"
-        strokeWidth="4"
+        strokeWidth={TRACK_STROKE_WIDTH}
         strokeLinecap="round"
       />
 
       {/* ノブのインジケーター */}
       <line
-        x1={size / 2}
-        y1={size / 2}
-        x2={size / 2 + (radius - 20) * Math.cos((angle - 90) * Math.PI / 180)}
-        y2={size / 2 + (radius - 20) * Math.sin((angle - 90) * Math.PI / 180)}
+        x1={center}
+        y1={center}
+        x2={center + indicatorLength * Math.cos((angle - 90) * DEG_TO_RAD)}
+        y2={center + indicatorLength * Math.sin((angle - 90) * DEG_TO_RAD)}
         stroke="#fff"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         strokeLinecap="round"
       />
 
