@@ -7,7 +7,6 @@ const INDICATOR_OFFSET = 20;
 const STROKE_WIDTH = 3;
 const TRACK_STROKE_WIDTH = 4;
 
-const GARI_POSITIONS = [25, 50, 75];
 
 interface RotaryKnobGariProps {
   value?: number;
@@ -64,24 +63,6 @@ export function RotaryKnobGari({
         strokeWidth={TRACK_STROKE_WIDTH}
         strokeLinecap="round"
       />
-
-      {/* ガリ位置のマーカー */}
-      {GARI_POSITIONS.map((pos) => {
-        const gariAngle = valueToAngle(pos);
-        const markerRadius = radius + 5;
-        const x = center + markerRadius * Math.cos((gariAngle - 90) * DEG_TO_RAD);
-        const y = center + markerRadius * Math.sin((gariAngle - 90) * DEG_TO_RAD);
-        return (
-          <circle
-            key={pos}
-            cx={x}
-            cy={y}
-            r={3}
-            fill="#ff6b6b"
-            opacity={0.7}
-          />
-        );
-      })}
 
       {/* 値を示すアーク */}
       <path

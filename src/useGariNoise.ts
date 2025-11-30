@@ -1,11 +1,10 @@
 import { useRef, useCallback } from 'react';
 
-const GARI_POSITIONS = [25, 50, 75]; // ガリが発生する値の位置
-const GARI_THRESHOLD = 2; // この範囲内に入ったらガリを発生
+const GARI_PROBABILITY = 0.08; // 値が変わるたびにガリが発生する確率
 
 export function useGariNoise() {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const lastGariPositionRef = useRef<number | null>(null);
+  const lastValueRef = useRef<number | null>(null);
 
   const getAudioContext = () => {
     if (!audioContextRef.current) {
@@ -54,19 +53,13 @@ export function useGariNoise() {
   }, []);
 
   const checkAndPlayGari = useCallback((value: number) => {
-    for (const pos of GARI_POSITIONS) {
-      const distance = Math.abs(value - pos);
-      if (distance < GARI_THRESHOLD) {
-        // 同じ位置で連続して鳴らさない
-        if (lastGariPositionRef.current !== pos) {
-          lastGariPositionRef.current = pos;
-          playGariNoise();
-        }
-        return;
+    // 値が変わった時だけ判定
+    if (lastValueRef.current !== value) {
+      lastValueRef.current = value;
+      if (Math.random() < GARI_PROBABILITY) {
+        playGariNoise();
       }
     }
-    // どのガリ位置からも離れたらリセット
-    lastGariPositionRef.current = null;
   }, [playGariNoise]);
 
   return { checkAndPlayGari };
