@@ -2,12 +2,16 @@ import { useState } from "react";
 import { RotaryKnob } from "./RotaryKnob";
 import { RotaryKnobVertical } from "./RotaryKnobVertical";
 import { RotaryKnobBidirectional } from "./RotaryKnobBidirectional";
+import { RotaryKnobAngular } from "./RotaryKnobAngular";
+import { RotaryKnobGari } from "./RotaryKnobGari";
 import "./App.css";
 
 function App() {
   const [value1, setValue1] = useState(50);
   const [value2, setValue2] = useState(50);
   const [value3, setValue3] = useState(50);
+  const [value4, setValue4] = useState(50);
+  const [value5, setValue5] = useState(50);
 
   return (
     <div
@@ -21,7 +25,7 @@ function App() {
     >
       <div style={{ textAlign: "center" }}>
         <h3>Rotary</h3>
-        <p style={{ fontSize: "12px", color: "#888" }}>円周操作</p>
+        <p style={{ fontSize: "12px", color: "#888" }}>円周操作（絶対）</p>
         <RotaryKnob
           value={value1}
           min={0}
@@ -56,6 +60,32 @@ function App() {
           onChange={setValue3}
         />
         <p style={{ fontSize: "24px", fontWeight: "bold" }}>{value3}</p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>Angular</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>円周操作（相対）</p>
+        <RotaryKnobAngular
+          value={value4}
+          min={0}
+          max={100}
+          size={150}
+          onChange={setValue4}
+        />
+        <p style={{ fontSize: "24px", fontWeight: "bold" }}>{value4}</p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>Gari</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>接点不良ノイズ付き</p>
+        <RotaryKnobGari
+          value={value5}
+          min={0}
+          max={100}
+          size={150}
+          onChange={setValue5}
+        />
+        <p style={{ fontSize: "24px", fontWeight: "bold" }}>{value5}</p>
       </div>
     </div>
   );
