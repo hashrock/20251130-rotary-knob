@@ -8,6 +8,7 @@ import { RotaryKnobSafe } from "./RotaryKnobSafe";
 import { RotaryKnobTiny } from "./RotaryKnobTiny";
 import { HSVKnob3D, type HSVColor, hsvToHex } from "./HSVKnob3D";
 import { RotaryKnob3D, type Rotation3D } from "./RotaryKnob3D";
+import { RotaryKnobMatryoshka } from "./RotaryKnobMatryoshka";
 import "./App.css";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
   const [tinyValues, setTinyValues] = useState([30, 50, 70, 40, 60, 80, 20, 90]);
   const [hsvColor, setHsvColor] = useState<HSVColor>({ h: 200, s: 80, v: 90 });
   const [rotation3D, setRotation3D] = useState<Rotation3D>({ x: 20, y: -30, z: 0 });
+  const [matryoshkaValues, setMatryoshkaValues] = useState([70, 45, 80, 30]);
 
   return (
     <div
@@ -149,6 +151,47 @@ function App() {
         </div>
         <p style={{ fontSize: "14px", fontFamily: "monospace", marginTop: "8px" }}>
           {hsvToHex(hsvColor.h, hsvColor.s, hsvColor.v)}
+        </p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>Matryoshka</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>多層ノブ</p>
+        <RotaryKnobMatryoshka
+          values={matryoshkaValues}
+          min={0}
+          max={100}
+          size={200}
+          onChange={setMatryoshkaValues}
+        />
+        <div style={{ marginTop: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+          <label style={{ color: "#888", fontSize: "12px" }}>層数:</label>
+          <input
+            type="number"
+            min={1}
+            max={8}
+            value={matryoshkaValues.length}
+            onChange={(e) => {
+              const newCount = Math.max(1, Math.min(8, parseInt(e.target.value) || 1));
+              if (newCount > matryoshkaValues.length) {
+                setMatryoshkaValues([...matryoshkaValues, ...Array(newCount - matryoshkaValues.length).fill(50)]);
+              } else if (newCount < matryoshkaValues.length) {
+                setMatryoshkaValues(matryoshkaValues.slice(0, newCount));
+              }
+            }}
+            style={{
+              width: 50,
+              padding: "4px 8px",
+              border: "1px solid #555",
+              borderRadius: 4,
+              background: "#333",
+              color: "#fff",
+              textAlign: "center",
+            }}
+          />
+        </div>
+        <p style={{ fontSize: "12px", color: "#4fc3f7", marginTop: "8px" }}>
+          {matryoshkaValues.join(", ")}
         </p>
       </div>
 
