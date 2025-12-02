@@ -9,6 +9,7 @@ import { RotaryKnobTiny } from "./RotaryKnobTiny";
 import { HSVKnob3D, type HSVColor, hsvToHex } from "./HSVKnob3D";
 import { RotaryKnob3D, type Rotation3D } from "./RotaryKnob3D";
 import { RotaryKnobMatryoshka } from "./RotaryKnobMatryoshka";
+import { RotaryKnobDateTime } from "./RotaryKnobDateTime";
 import "./App.css";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
   const [hsvColor, setHsvColor] = useState<HSVColor>({ h: 200, s: 80, v: 90 });
   const [rotation3D, setRotation3D] = useState<Rotation3D>({ x: 20, y: -30, z: 0 });
   const [matryoshkaValues, setMatryoshkaValues] = useState([70, 45, 80, 30]);
+  const [dateTime, setDateTime] = useState(new Date());
 
   return (
     <div
@@ -222,6 +224,19 @@ function App() {
         </div>
         <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
           {tinyValues.join(", ")}
+        </p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>DateTime</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>多スケール日時選択</p>
+        <RotaryKnobDateTime
+          value={dateTime}
+          size={280}
+          onChange={setDateTime}
+        />
+        <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
+          内→外: 分・時・日・月・年
         </p>
       </div>
     </div>
