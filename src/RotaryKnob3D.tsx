@@ -137,7 +137,10 @@ export function RotaryKnob3D({
       }}
       onMouseDown={(e) => handleMouseDown(e, rotation)}
       onTouchStart={(e) => handleTouchStart(e, rotation)}
-      onWheel={(e) => handleWheel(e, rotation)}
+      onWheel={(e) => {
+        e.preventDefault();
+        handleWheel(e, rotation);
+      }}
     >
       <svg width={size} height={size}>
         {/* Background gradient */}

@@ -10,6 +10,7 @@ import { HSVKnob3D, type HSVColor, hsvToHex } from "./HSVKnob3D";
 import { RotaryKnob3D, type Rotation3D } from "./RotaryKnob3D";
 import { RotaryKnobMatryoshka } from "./RotaryKnobMatryoshka";
 import { RotaryKnobDateTime } from "./RotaryKnobDateTime";
+import { RotaryKnobDateTimeSimple } from "./RotaryKnobDateTimeSimple";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   const [rotation3D, setRotation3D] = useState<Rotation3D>({ x: 20, y: -30, z: 0 });
   const [matryoshkaValues, setMatryoshkaValues] = useState([70, 45, 80, 30]);
   const [dateTime, setDateTime] = useState(new Date());
+  const [dateTime2, setDateTime2] = useState(new Date());
 
   return (
     <div
@@ -237,6 +239,19 @@ function App() {
         />
         <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
           内→外: 分・時・日・月・年
+        </p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>DateTime Simple</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>距離でモード切替</p>
+        <RotaryKnobDateTimeSimple
+          value={dateTime2}
+          size={150}
+          onChange={setDateTime2}
+        />
+        <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
+          近→遠: 分・時・日・月・年
         </p>
       </div>
     </div>
