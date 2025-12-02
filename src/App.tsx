@@ -6,6 +6,7 @@ import { RotaryKnobAngular } from "./RotaryKnobAngular";
 import { RotaryKnobGari } from "./RotaryKnobGari";
 import { RotaryKnobSafe } from "./RotaryKnobSafe";
 import { RotaryKnobTiny } from "./RotaryKnobTiny";
+import { RotaryKnob3D, type Rotation3D } from "./RotaryKnob3D";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const [value5, setValue5] = useState(50);
   const [value6, setValue6] = useState(50);
   const [tinyValues, setTinyValues] = useState([30, 50, 70, 40, 60, 80, 20, 90]);
+  const [rotation3D, setRotation3D] = useState<Rotation3D>({ x: 20, y: -30, z: 0 });
 
   return (
     <div
@@ -103,6 +105,19 @@ function App() {
           onChange={setValue6}
         />
         <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "30px" }}>{value6}</p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>3D Sphere</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>3軸回転（ホイールでZ軸）</p>
+        <RotaryKnob3D
+          rotation={rotation3D}
+          size={200}
+          onChange={setRotation3D}
+        />
+        <p style={{ fontSize: "14px", color: "#888", marginTop: "8px" }}>
+          X: {Math.round(rotation3D.x)}° Y: {Math.round(rotation3D.y)}° Z: {Math.round(rotation3D.z)}°
+        </p>
       </div>
 
       <div style={{ textAlign: "center" }}>
