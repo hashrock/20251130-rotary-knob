@@ -6,6 +6,7 @@ import { RotaryKnobAngular } from "./RotaryKnobAngular";
 import { RotaryKnobGari } from "./RotaryKnobGari";
 import { RotaryKnobSafe } from "./RotaryKnobSafe";
 import { RotaryKnobTiny } from "./RotaryKnobTiny";
+import { HSVKnob3D, type HSVColor, hsvToHex } from "./HSVKnob3D";
 import { RotaryKnob3D, type Rotation3D } from "./RotaryKnob3D";
 import "./App.css";
 
@@ -17,6 +18,7 @@ function App() {
   const [value5, setValue5] = useState(50);
   const [value6, setValue6] = useState(50);
   const [tinyValues, setTinyValues] = useState([30, 50, 70, 40, 60, 80, 20, 90]);
+  const [hsvColor, setHsvColor] = useState<HSVColor>({ h: 200, s: 80, v: 90 });
   const [rotation3D, setRotation3D] = useState<Rotation3D>({ x: 20, y: -30, z: 0 });
 
   return (
@@ -117,6 +119,36 @@ function App() {
         />
         <p style={{ fontSize: "14px", color: "#888", marginTop: "8px" }}>
           X: {Math.round(rotation3D.x)}° Y: {Math.round(rotation3D.y)}° Z: {Math.round(rotation3D.z)}°
+        </p>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <h3>HSV Color</h3>
+        <p style={{ fontSize: "12px", color: "#888" }}>3D球でHSV選択</p>
+        <HSVKnob3D
+          hsv={hsvColor}
+          size={200}
+          onChange={setHsvColor}
+        />
+        <div style={{ marginTop: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 8,
+              backgroundColor: hsvToHex(hsvColor.h, hsvColor.s, hsvColor.v),
+              border: "2px solid #fff",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+            }}
+          />
+          <div style={{ textAlign: "left", fontSize: "12px", color: "#888" }}>
+            <div>H: {Math.round(hsvColor.h)}°</div>
+            <div>S: {Math.round(hsvColor.s)}%</div>
+            <div>V: {Math.round(hsvColor.v)}%</div>
+          </div>
+        </div>
+        <p style={{ fontSize: "14px", fontFamily: "monospace", marginTop: "8px" }}>
+          {hsvToHex(hsvColor.h, hsvColor.s, hsvColor.v)}
         </p>
       </div>
 
