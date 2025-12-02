@@ -18,6 +18,7 @@ interface UseDateTimeKnobOptions {
   innerRadius: number;
   outerRadius: number;
   onChange?: (date: Date) => void;
+  onActiveScaleChange?: (scale: TimeScale | null) => void;
 }
 
 export function useDateTimeKnob({
@@ -25,6 +26,7 @@ export function useDateTimeKnob({
   innerRadius,
   outerRadius,
   onChange,
+  onActiveScaleChange,
 }: UseDateTimeKnobOptions) {
   const knobRef = useRef<SVGSVGElement>(null);
   const activeScale = useRef<TimeScale | null>(null);
@@ -126,6 +128,7 @@ export function useDateTimeKnob({
       if (!scale) return;
 
       activeScale.current = scale;
+      onActiveScaleChange?.(scale);
       lastAngle.current = angle;
       totalRotation.current = 0;
 
@@ -153,6 +156,7 @@ export function useDateTimeKnob({
 
       const handleMouseUp = () => {
         activeScale.current = null;
+        onActiveScaleChange?.(null);
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
       };
@@ -160,7 +164,7 @@ export function useDateTimeKnob({
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     },
-    [getAngleFromEvent, getScaleFromDistance, snapToTick, updateDate, onChange]
+    [getAngleFromEvent, getScaleFromDistance, snapToTick, updateDate, onChange, onActiveScaleChange]
   );
 
   const handleTouchStart = useCallback(
@@ -173,6 +177,7 @@ export function useDateTimeKnob({
       if (!scale) return;
 
       activeScale.current = scale;
+      onActiveScaleChange?.(scale);
       lastAngle.current = angle;
       totalRotation.current = 0;
 
@@ -200,6 +205,7 @@ export function useDateTimeKnob({
 
       const handleTouchEnd = () => {
         activeScale.current = null;
+        onActiveScaleChange?.(null);
         window.removeEventListener('touchmove', handleTouchMove);
         window.removeEventListener('touchend', handleTouchEnd);
       };
@@ -207,7 +213,7 @@ export function useDateTimeKnob({
       window.addEventListener('touchmove', handleTouchMove);
       window.addEventListener('touchend', handleTouchEnd);
     },
-    [getAngleFromEvent, getScaleFromDistance, snapToTick, updateDate, onChange]
+    [getAngleFromEvent, getScaleFromDistance, snapToTick, updateDate, onChange, onActiveScaleChange]
   );
 
   return {

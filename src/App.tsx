@@ -232,7 +232,7 @@ function App() {
         <p style={{ fontSize: "12px", color: "#888" }}>多スケール日時選択</p>
         <RotaryKnobDateTime
           value={dateTime}
-          size={280}
+          size={200}
           onChange={setDateTime}
         />
         <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>

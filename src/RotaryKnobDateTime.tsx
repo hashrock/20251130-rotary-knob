@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useDateTimeKnob, SCALES, SCALE_CONFIG, type TimeScale } from './useDateTimeKnob';
 import { DEG_TO_RAD } from './svgUtils';
 
 const VALUE_COLOR = '#4fc3f7';
-const TRACK_COLOR = '#333';
+const TRACK_COLOR = '#444';
 
 interface RotaryKnobDateTimeProps {
   value?: Date;
@@ -12,12 +13,14 @@ interface RotaryKnobDateTimeProps {
 
 export function RotaryKnobDateTime({
   value = new Date(),
-  size = 280,
+  size = 250,
   onChange,
 }: RotaryKnobDateTimeProps) {
+  const [activeScale, setActiveScale] = useState<TimeScale | null>(null);
+
   const center = size / 2;
-  const padding = 10;
-  const innerRadius = 35;
+  const padding = 8;
+  const innerRadius = 40;
   const outerRadius = center - padding;
 
   const { knobRef, getScaleRadii, handleMouseDown, handleTouchStart } = useDateTimeKnob({
@@ -25,6 +28,7 @@ export function RotaryKnobDateTime({
     innerRadius,
     outerRadius,
     onChange,
+    onActiveScaleChange: setActiveScale,
   });
 
   const getValueForScale = (scale: TimeScale): number => {
@@ -34,7 +38,7 @@ export function RotaryKnobDateTime({
       case 'hour':
         return value.getHours();
       case 'day':
-        return value.getDate() - 1; // 0-indexed for display
+        return value.getDate() - 1;
       case 'month':
         return value.getMonth();
       case 'year':
@@ -42,9 +46,11 @@ export function RotaryKnobDateTime({
     }
   };
 
-  const getAngleForValue = (val: number, ticks: number): number => {
-    return (val / ticks) * 360 - 90;
-  };
+  const year = value.getFullYear().toString();
+  const month = (value.getMonth() + 1).toString().padStart(2, '0');
+  const day = value.getDate().toString().padStart(2, '0');
+  const hour = value.getHours().toString().padStart(2, '0');
+  const minute = value.getMinutes().toString().padStart(2, '0');
 
   return (
     <svg
@@ -55,22 +61,21 @@ export function RotaryKnobDateTime({
       onMouseDown={(e) => handleMouseDown(e, value)}
       onTouchStart={(e) => handleTouchStart(e, value)}
     >
-      {/* Center display */}
+      {/* Center circle */}
       <circle
         cx={center}
         cy={center}
-        r={innerRadius - 4}
-        fill="#1a1a1a"
-        stroke="#444"
+        r={innerRadius - 2}
+        fill="#2a2a2a"
+        stroke="#555"
         strokeWidth={2}
       />
 
       {/* Scale rings */}
       {SCALES.map((scale) => {
-        const { ticks, label } = SCALE_CONFIG[scale];
+        const { ticks } = SCALE_CONFIG[scale];
         const radii = getScaleRadii(scale);
         const currentValue = getValueForScale(scale);
-        const indicatorAngle = getAngleForValue(currentValue, ticks);
         const ringWidth = radii.outer - radii.inner - 2;
 
         return (
@@ -85,54 +90,24 @@ export function RotaryKnobDateTime({
               strokeWidth={ringWidth}
             />
 
-            {/* Tick marks */}
+            {/* Tick dots */}
             {Array.from({ length: ticks }).map((_, i) => {
               const tickAngle = (i / ticks) * 360 - 90;
               const tickRad = tickAngle * DEG_TO_RAD;
               const isActive = i === currentValue;
-              const isMajor = scale === 'minute' || scale === 'hour'
-                ? i % (scale === 'minute' ? 15 : 6) === 0
-                : true;
-
-              if (!isMajor && !isActive) return null;
-
-              const tickInner = radii.inner + 1;
-              const tickOuter = radii.outer - 1;
 
               return (
-                <line
+                <circle
                   key={i}
-                  x1={center + tickInner * Math.cos(tickRad)}
-                  y1={center + tickInner * Math.sin(tickRad)}
-                  x2={center + tickOuter * Math.cos(tickRad)}
-                  y2={center + tickOuter * Math.sin(tickRad)}
-                  stroke={isActive ? VALUE_COLOR : '#555'}
-                  strokeWidth={isActive ? 3 : 1}
-                  strokeLinecap="round"
+                  cx={center + radii.mid * Math.cos(tickRad)}
+                  cy={center + radii.mid * Math.sin(tickRad)}
+                  r={isActive ? ringWidth / 2 + 1 : 1.5}
+                  fill={isActive ? VALUE_COLOR : '#666'}
+                  stroke={isActive ? '#fff' : 'none'}
+                  strokeWidth={isActive ? 1.5 : 0}
                 />
               );
             })}
-
-            {/* Current value indicator */}
-            <circle
-              cx={center + radii.mid * Math.cos(indicatorAngle * DEG_TO_RAD)}
-              cy={center + radii.mid * Math.sin(indicatorAngle * DEG_TO_RAD)}
-              r={ringWidth / 2}
-              fill={VALUE_COLOR}
-              stroke="#fff"
-              strokeWidth={1.5}
-            />
-
-            {/* Scale label (at 12 o'clock position, outside) */}
-            <text
-              x={center + (radii.outer + 2) * Math.cos(-90 * DEG_TO_RAD)}
-              y={center + (radii.outer + 2) * Math.sin(-90 * DEG_TO_RAD) - 2}
-              textAnchor="middle"
-              fill="#666"
-              fontSize={8}
-            >
-              {label}
-            </text>
           </g>
         );
       })}
@@ -140,23 +115,26 @@ export function RotaryKnobDateTime({
       {/* Center date/time display */}
       <text
         x={center}
-        y={center - 8}
+        y={center - 6}
         textAnchor="middle"
-        fill="#fff"
-        fontSize={11}
-        fontWeight="bold"
+        fontSize={10}
       >
-        {value.getFullYear()}/{(value.getMonth() + 1).toString().padStart(2, '0')}/{value.getDate().toString().padStart(2, '0')}
+        <tspan fill={activeScale === 'year' ? VALUE_COLOR : '#888'}>{year}</tspan>
+        <tspan fill="#888">/</tspan>
+        <tspan fill={activeScale === 'month' ? VALUE_COLOR : '#888'}>{month}</tspan>
+        <tspan fill="#888">/</tspan>
+        <tspan fill={activeScale === 'day' ? VALUE_COLOR : '#888'}>{day}</tspan>
       </text>
       <text
         x={center}
-        y={center + 8}
+        y={center + 10}
         textAnchor="middle"
-        fill={VALUE_COLOR}
-        fontSize={13}
+        fontSize={14}
         fontWeight="bold"
       >
-        {value.getHours().toString().padStart(2, '0')}:{value.getMinutes().toString().padStart(2, '0')}
+        <tspan fill={activeScale === 'hour' ? VALUE_COLOR : '#fff'}>{hour}</tspan>
+        <tspan fill="#888">:</tspan>
+        <tspan fill={activeScale === 'minute' ? VALUE_COLOR : '#fff'}>{minute}</tspan>
       </text>
     </svg>
   );
